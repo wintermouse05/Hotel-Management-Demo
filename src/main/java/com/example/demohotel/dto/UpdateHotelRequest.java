@@ -3,12 +3,7 @@ import lombok.Data;
 
 @Data
 public class UpdateHotelRequest {
-
     private String hotelName;
-    private boolean status;
-
-    public boolean getStatus() {
-        return status;
-    }
+    private Integer rate;
 
 }

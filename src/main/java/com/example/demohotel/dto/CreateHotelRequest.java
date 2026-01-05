@@ -3,7 +3,7 @@ import lombok.Data;
 
 @Data
 public class CreateHotelRequest {
-    private String hotelId;
+//    private Long hotelId;
     private String hotelName;
     private Integer rate;
 }

@@ -3,6 +3,8 @@ import com.example.demohotel.dto.CreateHotelRequest;
 import com.example.demohotel.dto.ResponseDTO;
 import com.example.demohotel.dto.UpdateHotelRequest;
 import com.example.demohotel.entity.Hotel;
+import com.example.demohotel.service.HotelService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -14,61 +16,34 @@ import java.util.List;
 public class HotelController {
 
     private static List<Hotel> hotels = new ArrayList<>();
+
+    @Autowired
+    HotelService hotelService;
 //    Create hotel
     @PostMapping("/hotels")
     public Hotel createHotel(@RequestBody CreateHotelRequest request){
-        Hotel hotel = new Hotel();
-        hotel.setHotelId(request.getHotelId());
-        hotel.setHotelName(request.getHotelName());
-        hotel.setRate(request.getRate());
-        hotels.add(hotel);
-
-        return hotel;
+        return hotelService.createHotel(request);
     }
 //    List hotels
     @GetMapping("/hotels")
     public List<Hotel> getHotels(@RequestParam(required = false) Integer rate){
-        if (rate != null ) {
-            List<Hotel> result = new LinkedList<>();
-            for (Hotel hotel: hotels) {
-                if (hotel.getRate().equals(rate)) result.add(hotel);
-            }
-            return result;
-        }
-        return hotels;
+        return hotelService.getAllHotels();
     }
     @GetMapping("/hotels/{hotel_id}")
-    public Hotel getHotelById(@PathVariable String hotel_id){
+    public Hotel getHotelById(@PathVariable Long hotel_id){
 //        return hotels.stream().filter(hotel -> hotel.getHotelId().equals(hotel_id)).findFirst().orElse(null)
-        for (Hotel hotel: hotels) {
-            if (hotel.getHotelId().equals(hotel_id)) return hotel;
-        }
-        return null;
+        return hotelService.getHotelById(hotel_id);
     }
     @PutMapping("/hotels/{hotel_id}")
-    public Hotel updateHotel(@PathVariable String hotel_id, @RequestBody UpdateHotelRequest request){
-        Hotel hotel = findHotelById(hotel_id);
-        if (hotel == null) {
-            return null;
-
-        }
-        hotel.setHotelName(request.getHotelName());
-        hotel.setStatus(request.getStatus());
-        return hotel;
+    public Hotel updateHotel(@PathVariable Long hotel_id, @RequestBody UpdateHotelRequest request){
+        return hotelService.updateHotel(hotel_id, request);
 
     }
     private Hotel findHotelById(String hotelId){
         return hotels.stream().filter(hotel -> hotel.getHotelId().equals(hotelId)).findFirst().orElse(null);
     }
     @DeleteMapping("/hotels/{hotel_id}")
-    public ResponseDTO deleteHotel(@PathVariable String hotel_id){
-        for (Hotel hotel: hotels) {
-            if (hotel.getHotelId().equals(hotel_id)) {
-                hotels.remove(hotel);
-                return new ResponseDTO(true, "Deleted hotel");
-
-            }
-        }
-        return new ResponseDTO(false, "Hotel not found");
+    public ResponseDTO deleteHotel(@PathVariable Long hotel_id){
+        return hotelService.deleteHotel(hotel_id);
     }
 }
