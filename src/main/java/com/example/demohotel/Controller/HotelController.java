@@ -5,6 +5,8 @@ import com.example.demohotel.dto.UpdateHotelRequest;
 import com.example.demohotel.entity.Hotel;
 import com.example.demohotel.service.HotelService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -45,5 +47,18 @@ public class HotelController {
     @DeleteMapping("/hotels/{hotel_id}")
     public ResponseDTO deleteHotel(@PathVariable Long hotel_id){
         return hotelService.deleteHotel(hotel_id);
+    }
+
+    @GetMapping("/hotels/search")
+    public ResponseEntity<Page<Hotel>> searchHotel(
+            @RequestParam(required = false) String hotelName,
+            @RequestParam(required = false) Integer minRate,
+            @RequestParam(required = false) Integer maxRate,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "asc") String sortDirection
+    ){
+        return hotelService.searchHotel(hotelName, minRate, maxRate, page, size, sortBy, sortDirection);
     }
 }
