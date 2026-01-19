@@ -9,6 +9,9 @@ import com.example.demohotel.repository.BookingRepository;
 import com.example.demohotel.repository.HotelRepository;
 import com.example.demohotel.repository.RoomRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -26,18 +29,25 @@ public class RoomService {
     @Autowired
     private BookingRepository bookingRepository;
 
+    @Cacheable(value = "rooms-all", key = "'all'")
     public List<Room> getAllRooms() {
         return roomRepository.findAll();
     }
 
+    @Cacheable(value = "rooms", key = "#roomId")
     public Room getRoomById(Long roomId) {
         return roomRepository.findByRoomId(roomId);
     }
 
+    @Cacheable(value = "hotel-rooms", key = "#hotelId")
     public List<Room> getRoomsByHotelId(Long hotelId) {
         return roomRepository.findByHotelHotelId(hotelId);
     }
 
+    @Caching(evict = {
+            @CacheEvict(value = "rooms-all", allEntries = true),
+            @CacheEvict(value = "hotel-rooms", key = "#request.hotelId")
+    })
     public Room createRoom(CreateRoomRequest request) {
         Hotel hotel = hotelRepository.findByHotelId(request.getHotelId());
         if (hotel == null) {
@@ -55,6 +65,11 @@ public class RoomService {
         return roomRepository.save(room);
     }
 
+    @Caching(evict = {
+            @CacheEvict(value = "rooms", key = "#roomId"),
+            @CacheEvict(value = "rooms-all", allEntries = true),
+            @CacheEvict(value = "hotel-rooms", allEntries = true)
+    })
     public Room updateRoom(Long roomId, CreateRoomRequest request) {
         Room room = roomRepository.findByRoomId(roomId);
         if (room == null) {
@@ -70,6 +85,11 @@ public class RoomService {
         return roomRepository.save(room);
     }
 
+    @Caching(evict = {
+            @CacheEvict(value = "rooms", key = "#roomId"),
+            @CacheEvict(value = "rooms-all", allEntries = true),
+            @CacheEvict(value = "hotel-rooms", allEntries = true)
+    })
     public ResponseDTO deleteRoom(Long roomId) {
         Room room = roomRepository.findByRoomId(roomId);
         if (room == null) {

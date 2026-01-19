@@ -7,6 +7,9 @@ import com.example.demohotel.dto.UpdateHotelRequest;
 import com.example.demohotel.entity.Hotel;
 import com.example.demohotel.repository.HotelRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -22,18 +25,25 @@ public class HotelService {
     @Autowired
     HotelRepository hotelRepository;
 
+    @Cacheable(value = "hotels-all", key = "'all'")
     public List<Hotel> getAllHotels(){
         return hotelRepository.findAll();
     }
+    @Cacheable(value = "hotels", key = "#hotelId")
     public Hotel getHotelById(Long hotelId){
         return hotelRepository.findByHotelId(hotelId);
     }
+    @CacheEvict(value = "hotels-all", allEntries = true)
     public Hotel createHotel(CreateHotelRequest request){
         Hotel hotel = new Hotel();
         hotel.setHotelName(request.getHotelName());
         hotel.setRate(request.getRate());
         return hotelRepository.save(hotel);
     }
+    @Caching(evict = {
+            @CacheEvict(value = "hotels", key = "#hotelId"),
+            @CacheEvict(value = "hotels-all", allEntries = true)
+    })
     public Hotel updateHotel(Long hotelId, UpdateHotelRequest request){
         Hotel hotel = hotelRepository.findByHotelId(hotelId);
         if (hotel == null) return null;
@@ -42,6 +52,10 @@ public class HotelService {
         return hotelRepository.save(hotel);
 
     }
+    @Caching(evict = {
+            @CacheEvict(value = "hotels", key = "#hotelId"),
+            @CacheEvict(value = "hotels-all", allEntries = true)
+    })
     public ResponseDTO deleteHotel(Long hotelId){
         Hotel hotel = hotelRepository.findByHotelId(hotelId);
         if (hotel == null) return new ResponseDTO(false, "Hotel not found");
