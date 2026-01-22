@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${hotel.hotelName} + ' - Hotel Booking'">Hotel Detail</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+<body>
+<!-- Navigation -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container">
+        <a class="navbar-brand fw-bold" th:href="@{/}">
+            <i class="bi bi-building"></i> Hotel Booking
+        </a>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item"><a class="nav-link" th:href="@{/}"><i class="bi bi-house"></i> Home</a></li>
+                <li class="nav-item"><a class="nav-link active" th:href="@{/hotels}"><i class="bi bi-building"></i> Hotels</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/rooms}"><i class="bi bi-door-open"></i> Rooms</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/users}"><i class="bi bi-people"></i> Users</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/bookings}"><i class="bi bi-calendar-check"></i> Bookings</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- Main Content -->
+<main class="container my-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a th:href="@{/}">Home</a></li>
+            <li class="breadcrumb-item"><a th:href="@{/hotels}">Hotels</a></li>
+            <li class="breadcrumb-item active" th:text="${hotel.hotelName}">Hotel Name</li>
+        </ol>
+    </nav>
+
+    <!-- Hotel Info Card -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">
+                <i class="bi bi-building"></i>
+                <span th:text="${hotel.hotelName}">Hotel Name</span>
+            </h4>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>ID:</strong> <span th:text="${hotel.hotelId}">1</span></p>
+                    <p>
+                        <strong>Rating:</strong>
+                        <span th:if="${hotel.rate != null}">
+                                <i class="bi bi-star-fill text-warning" th:each="i : ${#numbers.sequence(1, hotel.rate)}"></i>
+                                (<span th:text="${hotel.rate}">5</span>/5)
+                            </span>
+                        <span th:unless="${hotel.rate != null}" class="text-muted">Not rated</span>
+                    </p>
+                    <p>
+                        <strong>Status:</strong>
+                        <span th:if="${hotel.status}" class="badge bg-success">Active</span>
+                        <span th:unless="${hotel.status}" class="badge bg-danger">Inactive</span>
+                    </p>
+                </div>
+                <div class="col-md-6">
+                    <div th:if="${hotel.address != null}">
+                        <p><strong>Address:</strong></p>
+                        <address class="mb-0">
+                            <span th:text="${hotel.address.street}">Street</span><br>
+                            <span th:text="${hotel.address.city}">City</span>,
+                            <span th:text="${hotel.address.province}">Province</span><br>
+                            <span th:text="${hotel.address.nation}">Country</span>
+                        </address>
+                    </div>
+                    <p th:unless="${hotel.address != null}" class="text-muted">No address information</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rooms Section -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0"><i class="bi bi-door-open"></i> Rooms</h5>
+            <span class="badge bg-success" th:text="${#lists.size(rooms)} + ' rooms'">0 rooms</span>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                    <tr>
+                        <th>Room Name</th>
+                        <th>Type</th>
+                        <th>Quantity</th>
+                        <th>Price/Night</th>
+                        <th>Description</th>
+                        <th>Status</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="room : ${rooms}">
+                        <td th:text="${room.roomName}">Room Name</td>
+                        <td><span class="badge bg-info" th:text="${room.roomType}">Type</span></td>
+                        <td th:text="${room.totalQuantity}">10</td>
+                        <td>
+                            <strong class="text-success" th:text="${#numbers.formatDecimal(room.pricePerNight, 0, 'COMMA', 0, 'POINT')} + ' VND'">0 VND</strong>
+                        </td>
+                        <td th:text="${room.description}">Description</td>
+                        <td>
+                            <span th:if="${room.status}" class="badge bg-success">Available</span>
+                            <span th:unless="${room.status}" class="badge bg-danger">Unavailable</span>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(rooms)}">
+                        <td colspan="6" class="text-center text-muted py-4">
+                            <i class="bi bi-inbox display-4"></i>
+                            <p>No rooms available</p>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Back Button -->
+    <div class="mt-4">
+        <a th:href="@{/hotels}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Back to Hotels
+        </a>
+    </div>
+</main>
+
+<footer class="bg-light py-3 mt-5">
+    <div class="container text-center">
+        <span class="text-muted">© 2026 Hotel Booking System</span>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
