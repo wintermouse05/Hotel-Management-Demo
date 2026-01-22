@@ -71,14 +71,14 @@ public class UserService {
             @CacheEvict(value = "users", key = "#userId"),
             @CacheEvict(value = "users-all", allEntries = true)
     })
-    public ResponseDTO deleteUser(Long userId) {
+    public ResponseDTO<Void> deleteUser(Long userId) {
         User user = userRepository.findByUserId(userId);
         if (user == null) {
-            return new ResponseDTO(false, "User not found");
+            return ResponseDTO.<Void>builder().code(404).message("User not found").build();
         }
 
         user.setStatus(false);
         userRepository.save(user);
-        return new ResponseDTO(true, "User deleted successfully");
+        return ResponseDTO.<Void>builder().code(200).message("User deleted successfully").build();
     }
 }

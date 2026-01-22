@@ -56,12 +56,12 @@ public class HotelService {
             @CacheEvict(value = "hotels", key = "#hotelId"),
             @CacheEvict(value = "hotels-all", allEntries = true)
     })
-    public ResponseDTO deleteHotel(Long hotelId){
+    public ResponseDTO<Void> deleteHotel(Long hotelId){
         Hotel hotel = hotelRepository.findByHotelId(hotelId);
-        if (hotel == null) return new ResponseDTO(false, "Hotel not found");
+        if (hotel == null) return ResponseDTO.<Void>builder().code(404).message("Hotel not found").build();
         hotel.setStatus(false);
         hotelRepository.save(hotel);
-        return new ResponseDTO(true, "Hotel deleted successfully");
+        return ResponseDTO.<Void>builder().code(200).message("Hotel deleted successfully").build();
     }
     public ResponseEntity<Page<Hotel>> searchHotel(String hotelName, Integer minRate, Integer maxRate, int page, int size, String sortBy, String sortDirection){
         HotelSearchRequest request = new HotelSearchRequest();

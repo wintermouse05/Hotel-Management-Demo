@@ -21,12 +21,12 @@ public class HotelController {
 
     @Autowired
     HotelService hotelService;
-//    Create hotel
+    //    Create hotel
     @PostMapping("/hotels")
     public Hotel createHotel(@RequestBody CreateHotelRequest request){
         return hotelService.createHotel(request);
     }
-//    List hotels
+    //    List hotels
     @GetMapping("/hotels")
     public List<Hotel> getHotels(@RequestParam(required = false) Integer rate){
         return hotelService.getAllHotels();
@@ -45,7 +45,7 @@ public class HotelController {
         return hotels.stream().filter(hotel -> hotel.getHotelId().equals(hotelId)).findFirst().orElse(null);
     }
     @DeleteMapping("/hotels/{hotel_id}")
-    public ResponseDTO deleteHotel(@PathVariable Long hotel_id){
+    public ResponseDTO<Void> deleteHotel(@PathVariable Long hotel_id){
         return hotelService.deleteHotel(hotel_id);
     }
 

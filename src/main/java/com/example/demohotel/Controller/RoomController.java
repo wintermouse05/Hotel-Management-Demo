@@ -45,7 +45,7 @@ public class RoomController {
             Room room = roomService.createRoom(request);
             return ResponseEntity.ok(room);
         } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(new ResponseDTO(false, e.getMessage()));
+            return ResponseEntity.badRequest().body(ResponseDTO.builder().code(400).message(e.getMessage()).build());
         }
     }
 
@@ -59,7 +59,7 @@ public class RoomController {
     }
 
     @DeleteMapping("/rooms/{roomId}")
-    public ResponseDTO deleteRoom(@PathVariable Long roomId) {
+    public ResponseDTO<Void> deleteRoom(@PathVariable Long roomId) {
         return roomService.deleteRoom(roomId);
     }
 

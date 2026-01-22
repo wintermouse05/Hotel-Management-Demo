@@ -37,7 +37,7 @@ public class UserController {
             User user = userService.createUser(request);
             return ResponseEntity.ok(user);
         } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(new ResponseDTO(false, e.getMessage()));
+            return ResponseEntity.badRequest().body(ResponseDTO.builder().code(400).message(e.getMessage()).build());
         }
     }
 
@@ -51,7 +51,7 @@ public class UserController {
     }
 
     @DeleteMapping("/users/{userId}")
-    public ResponseDTO deleteUser(@PathVariable Long userId) {
+    public ResponseDTO<Void> deleteUser(@PathVariable Long userId) {
         return userService.deleteUser(userId);
     }
 }

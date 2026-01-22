@@ -7,10 +7,9 @@ import lombok.NoArgsConstructor;
 
 @Data
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
-public class ResponseDTO<T> {
-    private int code;
-    private String message;
-    private T data;
+@NoArgsConstructor
+public class AuthenticationRequest {
+    private String username;
+    private String password;
 }

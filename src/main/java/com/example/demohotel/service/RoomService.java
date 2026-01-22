@@ -90,15 +90,15 @@ public class RoomService {
             @CacheEvict(value = "rooms-all", allEntries = true),
             @CacheEvict(value = "hotel-rooms", allEntries = true)
     })
-    public ResponseDTO deleteRoom(Long roomId) {
+    public ResponseDTO<Void> deleteRoom(Long roomId) {
         Room room = roomRepository.findByRoomId(roomId);
         if (room == null) {
-            return new ResponseDTO(false, "Room not found");
+            return ResponseDTO.<Void>builder().code(404).message("Room not found").build();
         }
 
         room.setStatus(false);
         roomRepository.save(room);
-        return new ResponseDTO(true, "Room deleted successfully");
+        return ResponseDTO.<Void>builder().code(200).message("Room deleted successfully").build();
     }
 
     /**
